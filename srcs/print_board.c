@@ -6,13 +6,13 @@
 /*   By: astanton <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/01 18:24:45 by astanton          #+#    #+#             */
-/*   Updated: 2019/02/03 22:39:36 by astanton         ###   ########.fr       */
+/*   Updated: 2019/02/04 21:20:28 by astanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-void	print_last(char **board, int init_size)
+static void	print_last(char **board, int init_size)
 {
 	int	x;
 	int	y;
@@ -29,7 +29,7 @@ void	print_last(char **board, int init_size)
 	}
 }
 
-void	print_fill_board(char **board, t_list *lst, int init_size)
+static void	print_fill_board(char **board, t_list *lst, int init_size)
 {
 	t_list	*take;
 	int		x;
@@ -54,7 +54,7 @@ void	print_fill_board(char **board, t_list *lst, int init_size)
 	return ;
 }
 
-void	free_board(char **board, int init_size)
+static void	free_board(char **board, int init_size)
 {
 	int	i;
 
@@ -67,7 +67,7 @@ void	free_board(char **board, int init_size)
 	free(board);
 }
 
-void	print_board(int init_size, t_list *lst)
+void		print_board(int init_size, t_list *lst)
 {
 	char	**board;
 	int		i;

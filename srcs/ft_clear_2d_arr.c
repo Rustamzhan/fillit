@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "fillit.h"
 
 void	ft_clear_2d_arr(void **arr)
 {

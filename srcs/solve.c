@@ -6,13 +6,13 @@
 /*   By: astanton <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/03 21:28:48 by astanton          #+#    #+#             */
-/*   Updated: 2019/02/03 22:46:51 by astanton         ###   ########.fr       */
+/*   Updated: 2019/02/04 21:21:30 by astanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-char	**create_board(int size)
+static char	**create_board(int size)
 {
 	int		i;
 	char	**board;
@@ -30,7 +30,7 @@ char	**create_board(int size)
 	return (board);
 }
 
-void	fill_board(int x, int y, t_point **shape, char **board)
+static void	fill_board(int x, int y, t_point **shape, char **board)
 {
 	t_point	*new;
 	int		i;
@@ -45,7 +45,7 @@ void	fill_board(int x, int y, t_point **shape, char **board)
 	}
 }
 
-int		fill_if_fit(int x, int y, t_tetromino *content, char **board)
+static int	fill_if_fit(int x, int y, t_tetromino *content, char **board)
 {
 	t_point	*new;
 	t_point	**shape;
@@ -63,15 +63,16 @@ int		fill_if_fit(int x, int y, t_tetromino *content, char **board)
 			free(new);
 			return (0);
 		}
+		else
+			free(new);
 		i++;
 	}
-	free(new);
 	fill_board(x, y, shape, board);
 	change_point(start, x, y);
 	return (1);
 }
 
-int		solve_board(char **board, t_list *tetrominos, int size)
+static int	solve_board(char **board, t_list *tetrominos, int size)
 {
 	t_list		*current;
 	t_tetromino	*cont;
@@ -100,7 +101,7 @@ int		solve_board(char **board, t_list *tetrominos, int size)
 	return (0);
 }
 
-int		solve(t_list *tetrominos)
+int			solve(t_list *tetrominos)
 {
 	char	**board;
 	int		init_size;
