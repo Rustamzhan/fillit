@@ -6,13 +6,13 @@
 /*   By: astanton <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/01 18:24:45 by astanton          #+#    #+#             */
-/*   Updated: 2019/02/04 21:20:28 by astanton         ###   ########.fr       */
+/*   Updated: 2019/02/08 19:50:56 by astanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-static void	print_last(char **board, int init_size)
+static void	print_full_board(char **board, int init_size)
 {
 	int	x;
 	int	y;
@@ -29,28 +29,29 @@ static void	print_last(char **board, int init_size)
 	}
 }
 
-static void	print_fill_board(char **board, t_list *lst, int init_size)
+static void	fill_with_letters(char **board, t_list *tetrominoes)
 {
-	t_list	*take;
-	int		x;
-	int		y;
-	int		i;
+	t_list		*current;
+	int			x;
+	int			y;
+	int			i;
+	t_tetromino	*cont;
 
-	take = lst;
-	while (take)
+	current = tetrominoes;
+	while (current)
 	{
+		cont = ((t_tetromino *)(current->content));
 		i = 0;
 		while (i < TETR_SIZE)
 		{
-			x = ((t_tetromino *)(take->content))->start->x +
-				((t_tetromino *)(take->content))->shape[i]->x;
-			y = ((t_tetromino *)(take->content))->start->y +
-				((t_tetromino *)(take->content))->shape[i++]->y;
-			board[x][y] = ((t_tetromino *)(take->content))->letter;
+			x = cont->start->x +
+				cont->shape[i]->x;
+			y = cont->start->y +
+				cont->shape[i++]->y;
+			board[x][y] = cont->letter;
 		}
-		take = take->next;
+		current = current->next;
 	}
-	print_last(board, init_size);
 	return ;
 }
 
@@ -67,13 +68,11 @@ static void	free_board(char **board, int init_size)
 	free(board);
 }
 
-void		print_board(int init_size, t_list *lst)
+static void	fill_with_dots(char **board, int init_size)
 {
-	char	**board;
 	int		i;
 	int		j;
 
-	board = (char **)malloc(sizeof(char *) * (init_size));
 	i = 0;
 	while (i < init_size)
 		board[i++] = (char *)malloc(sizeof(char) * (init_size + 1));
@@ -91,6 +90,15 @@ void		print_board(int init_size, t_list *lst)
 				board[i][j++] = '.';
 		}
 	}
-	print_fill_board(board, lst, init_size);
+}
+
+void		print_board(int init_size, t_list *tetrominoes)
+{
+	char	**board;
+
+	board = (char **)malloc(sizeof(char *) * init_size);
+	fill_with_dots(board, init_size);
+	fill_with_letters(board, tetrominoes);
+	print_full_board(board, init_size);
 	free_board(board, init_size);
 }

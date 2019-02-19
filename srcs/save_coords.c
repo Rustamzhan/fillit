@@ -20,16 +20,16 @@ static int			search_min_y(char *buf)
 	i = 0;
 	while (buf[i] != '\0')
 	{
-		if (buf[i] == '#')
+		if (buf[i] == FULL)
 		{
-			min_y = ((i > 4) ? i % (i / 5 * 5) : i);
+			min_y = ((i > TETR_SIZE) ? i % LINE_LEN : i);
 			while (buf[++i] != '\0')
 			{
-				if (buf[i] == '#')
+				if (buf[i] == FULL)
 				{
-					if ((i / 5) > 0)
-						min_y = (((i % (i / 5 * 5)) < min_y) ?
-								(i % (i / 5 * 5)) : min_y);
+					if ((i / LINE_LEN) > 0)
+						min_y = (((i % LINE_LEN) < min_y) ?
+								(i % LINE_LEN) : min_y);
 					else
 						min_y = ((i < min_y) ? i : min_y);
 				}
@@ -52,7 +52,7 @@ static int			search_min_x(char *buf)
 	while (buf[i] != '\0')
 	{
 		n += ((buf[i] == '\n') ? 1 : 0);
-		if (buf[i++] == '#')
+		if (buf[i++] == FULL)
 		{
 			min_x = n;
 			return (min_x);
@@ -71,25 +71,25 @@ static t_point		**create_positions(char *buf)
 
 	i = -1;
 	j = -1;
-	if (!(positions = (t_point **)malloc(4 * sizeof(t_point))))
+	if (!(positions = (t_point **)malloc(TETR_SIZE * sizeof(t_point))))
 		return (NULL);
 	min_x = search_min_x(buf);
 	min_y = search_min_y(buf);
 	while (buf[++i] != '\0')
 	{
-		if (buf[i] == '#')
+		if (buf[i] == FULL)
 		{
 			if (!(positions[++j] = (t_point *)malloc(sizeof(t_point))))
 				return (NULL);
-			positions[j]->x = i / 5 - min_x;
-			positions[j]->y = ((i > 4) ? (i % (i / 5 * 5) - min_y) :
+			positions[j]->x = i / LINE_LEN - min_x;
+			positions[j]->y = ((i > TETR_SIZE) ? (i % LINE_LEN - min_y) :
 					(i - min_y));
 		}
 	}
 	return (positions);
 }
 
-t_tetromino			*create_one_content(char letter, char *buf)
+t_tetromino			*create_content(char letter, char *buf)
 {
 	t_tetromino	*new;
 

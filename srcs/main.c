@@ -12,21 +12,23 @@
 
 #include "fillit.h"
 
-static void	free_list(t_list *lst)
+static void	free_list(t_list *tetrominoes)
 {
-	t_list	*head;
-	t_list	*current;
-	int		i;
+	t_list		*head;
+	t_list		*current;
+	int			i;
+	t_tetromino	*cont;
 
-	current = lst;
+	current = tetrominoes;
 	while (current)
 	{
+		cont = ((t_tetromino *)(current->content));
 		head = current->next;
 		i = 0;
 		while (i < TETR_SIZE)
-			free(((t_tetromino *)(current->content))->shape[i++]);
-		free(((t_tetromino *)(current->content))->shape);
-		free(((t_tetromino *)(current->content))->start);
+			free(cont->shape[i++]);
+		free(cont->shape);
+		free(cont->start);
 		free(current->content);
 		free(current);
 		current = head;
@@ -36,20 +38,20 @@ static void	free_list(t_list *lst)
 int			main(int ac, char **av)
 {
 	int				fd;
-	static t_list	*lst;
+	static t_list	*tetrominoes;
 	int				init_size;
 
 	if (ac != 2)
 	{
-		ft_putstr("usage: a.out source_file\n");
+		ft_putstr("usage: fillit source_file\n");
 		exit(1);
 	}
-	lst = NULL;
+	tetrominoes = NULL;
 	fd = open(av[1], O_RDONLY);
-	validating_file(fd, &lst);
-	init_size = solve(lst);
-	print_board(init_size, lst);
-	free_list(lst);
+	validating_file(fd, &tetrominoes);
+	init_size = solve(tetrominoes);
+	print_board(init_size, tetrominoes);
+	free_list(tetrominoes);
 	close(fd);
 	return (0);
 }

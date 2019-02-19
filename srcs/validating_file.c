@@ -12,68 +12,68 @@
 
 #include "fillit.h"
 
-static int	check_for_touch(char *buf, int i)
+static int	check_for_connections(char *buf, int i)
 {
 	int nbr;
 
 	nbr = 0;
-	nbr += ((buf[i + 1] == '#') ? 1 : 0);
-	if (i < 15)
-		nbr += ((buf[i + 5] == '#') ? 1 : 0);
+	nbr += ((buf[i + 1] == FULL) ? 1 : 0);
+	if (i < LINE_LEN * 3)
+		nbr += ((buf[i + LINE_LEN] == FULL) ? 1 : 0);
 	if (i > 0)
-		nbr += ((buf[i - 1] == '#') ? 1 : 0);
-	if (i > 4)
-		nbr += ((buf[i - 5] == '#') ? 1 : 0);
+		nbr += ((buf[i - 1] == FULL) ? 1 : 0);
+	if (i > TETR_SIZE)
+		nbr += ((buf[i - LINE_LEN] == FULL) ? 1 : 0);
 	return (nbr);
 }
 
 static int	check_buf(char *buf)
 {
 	int i;
-	int lines;
-	int nbr_points;
-	int nbr_sharps;
-	int	nbr_touch;
+	int cols;
+	int n_empt;
+	int n_full;
+	int	n_connct;
 
 	i = -1;
-	lines = 0;
-	nbr_points = 0;
-	nbr_sharps = 0;
-	nbr_touch = 0;
+	cols = 0;
+	n_empt = 0;
+	n_full = 0;
+	n_connct = 0;
 	while (buf[++i] != '\0')
 	{
-		if ((buf[i] != '#' && buf[i] != '.' && buf[i] != '\n' && buf[i] != '\0')
-				|| lines++ > 5)
+		if ((buf[i] != FULL && buf[i] != EMP && buf[i] != '\n'
+				&& buf[i] != '\0') || cols++ > LINE_LEN)
 			return (1);
-		lines = ((buf[i] == '\n') ? 0 : lines);
-		if (buf[i] == '#')
+		cols = ((buf[i] == '\n') ? 0 : cols);
+		if (buf[i] == FULL)
 		{
-			nbr_sharps++;
-			nbr_touch += check_for_touch(buf, i);
+			n_full++;
+			n_connct += check_for_connections(buf, i);
 		}
-		nbr_points += ((buf[i] == '.') ? 1 : 0);
+		n_empt += ((buf[i] == EMP) ? 1 : 0);
 	}
-	return ((nbr_sharps != 4 || nbr_points != 12 || nbr_touch < 5) ? 1 : 0);
+	return ((n_full != 4 || n_empt != 12 || n_connct < 5) ? 1 : 0);
 }
 
-static void	failed_check(char *buf)
+static void	abort_prog(char *buf)
 {
 	free(buf);
 	ft_putstr("error\n");
 	exit(1);
 }
 
-static void	create_list(t_list **lst, int letter, char *buf)
+static void	create_list(t_list **tetrominoes, int letter, char *buf)
 {
 	t_list	*current;
 	t_list	*new;
 
-	current = *lst;
-	if (!*lst)
+	current = *tetrominoes;
+	if (!*tetrominoes)
 	{
-		*lst = ft_lstnew(NULL, 0);
-		current = *lst;
-		current->content = create_one_content(letter, buf);
+		*tetrominoes = ft_lstnew(NULL, 0);
+		current = *tetrominoes;
+		current->content = create_content(letter, buf);
 	}
 	else
 	{
@@ -82,12 +82,12 @@ static void	create_list(t_list **lst, int letter, char *buf)
 		new = ft_lstnew(NULL, 0);
 		current->next = new;
 		current = current->next;
-		current->content = create_one_content(letter, buf);
+		current->content = create_content(letter, buf);
 	}
 	return ;
 }
 
-void		validating_file(int fd, t_list **lst)
+void		validating_file(int fd, t_list **tetrominoes)
 {
 	char			*buf;
 	int				ret;
@@ -95,23 +95,23 @@ void		validating_file(int fd, t_list **lst)
 
 	buf = ft_strnew(BUFF_SIZE + 1);
 	if (fd < 0 || read(fd, buf, 0) < 0)
-		failed_check(buf);
+		abort_prog(buf);
 	letter = 'A' - 1;
 	while ((ret = read(fd, buf, BUFF_SIZE)))
 	{
 		buf[ret] = '\0';
 		if (check_buf(buf))
-			failed_check(buf);
+			abort_prog(buf);
 		if (buf[ret - 1] != '\n')
-			failed_check(buf);
+			abort_prog(buf);
 		if (++letter > 'Z')
-			failed_check(buf);
-		create_list(lst, letter, buf);
+			abort_prog(buf);
+		create_list(tetrominoes, letter, buf);
 		if (read(fd, buf, 1))
 			if (buf[0] != '\n')
-				failed_check(buf);
+				abort_prog(buf);
 	}
 	if (ret == 0 && (buf[0] == '\n' || buf[0] == '\0'))
-		failed_check(buf);
+		abort_prog(buf);
 	free(buf);
 }

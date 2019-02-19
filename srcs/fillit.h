@@ -13,6 +13,9 @@
 #ifndef FILLIT_H
 # define FILLIT_H
 # define TETR_SIZE 4
+# define LINE_LEN 5
+# define FULL '#'
+# define EMP '.'
 # define BUFF_SIZE 20
 # include <unistd.h>
 # include <fcntl.h>
@@ -41,7 +44,7 @@ int				solve(t_list *tetrominos);
 int				ft_sqrt_up(int n);
 int				ft_lst_len(t_list *lst);
 t_tetromino		*create_tetromino(char letter, t_point **positions);
-t_tetromino		*create_one_content(char letter, char *buf);
+t_tetromino		*create_content(char letter, char *buf);
 t_point			*create_point(int x, int y);
 t_point			*sum_points(int x, int y, t_point *a);
 

@@ -72,14 +72,14 @@ static int	fill_if_fit(int x, int y, t_tetromino *content, char **board)
 	return (1);
 }
 
-static int	solve_board(char **board, t_list *tetrominos, int size)
+static int	solve_board(char **board, t_list *tetrominoes, int size)
 {
 	t_list		*current;
 	t_tetromino	*cont;
 	int			x;
 	int			y;
 
-	current = tetrominos;
+	current = tetrominoes;
 	if (!current)
 		return (1);
 	cont = (t_tetromino*)current->content;
@@ -101,14 +101,14 @@ static int	solve_board(char **board, t_list *tetrominos, int size)
 	return (0);
 }
 
-int			solve(t_list *tetrominos)
+int			solve(t_list *tetrominoes)
 {
 	char	**board;
 	int		init_size;
 
-	init_size = ft_sqrt_up(4 * ft_lst_len(tetrominos));
+	init_size = ft_sqrt_up(TETR_SIZE * ft_lst_len(tetrominoes));
 	board = create_board(init_size);
-	while (!solve_board(board, tetrominos, init_size))
+	while (!solve_board(board, tetrominoes, init_size))
 	{
 		ft_clear_2d_arr((void**)board);
 		init_size++;
